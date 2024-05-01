@@ -6,37 +6,38 @@ import java.util.Scanner;
  * Currently, the log file is assumed to contain simply
  * integer date and time information.
  * 
- * @author David J. Barnes and Michael Kolling.
- * @version    2016.02.29
+ * @author Elisha White
+ * @version 2024.04.29
  */
-public class LoglineTokenizer
-{
     /**
      * Construct a LogLineAnalyzer
      */
-    public LoglineTokenizer()
+public class LoglineTokenizer 
+{
+    public LoglineTokenizer() 
     {
+        
     }
-
+    
     /**
-     * Tokenize a log line. Place the integer values from
-     * it into an array. The number of tokens on the line
-     * must be sufficient to fill the array.
-     *
-     * @param logline The line to be tokenized.
-     * @param dataLine Where to store the values.
+     * Tokenize a log line and extract individual data items.
+     * 
+     * @param logline   The log line string to be tokenized.
+     * @param dataLine  The integer array to store the extracted data items.
+     * @throws java.util.NoSuchElementException If there are insufficient data items in the log line.
      */
-    public void tokenize(String logline, int[] dataLine)
+    public void tokenize(String logline, int[] dataLine) 
     {
-        try {
-            // Scan the logline for integers.
+        try 
+        {
             Scanner tokenizer = new Scanner(logline);
-            for(int i = 0; i < dataLine.length; i++) {
+            for (int i = 0; i < dataLine.length; i++) 
+            {
                 dataLine[i] = tokenizer.nextInt();
             }
-        }
-        catch(java.util.NoSuchElementException e) {
-            System.out.println("Insuffient data items on log line: " + logline);
+        } catch (java.util.NoSuchElementException e) 
+        {
+            System.out.println("Insufficient data items on log line: " + logline);
             throw e;
         }
     }

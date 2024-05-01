@@ -6,135 +6,150 @@ import java.util.Calendar;
  * Individual fields are made available via
  * accessors such as getHour() and getMinute().
  * 
- * @author David J. Barnes and Michael Kölling.
- * @version    2016.02.29
+ * @author Elisha White
+ * @version 2024.04.29
  */
-public class LogEntry implements Comparable<LogEntry>
+public class LogEntry implements Comparable<LogEntry> 
 {
-    // Where the data values extracted from a single
-    // log line are stored.
-    private int[] dataValues;
-    // The equivalent Calendar object for the log time.
+    // The timestamp of the log entry.
     private Calendar when;
-    
-    // At which index in dataValues the different fields
-    // from a log line are stored.
-    private static final int YEAR = 0, MONTH = 1, DAY = 2,
-                             HOUR = 3, MINUTE = 4;
-    // The number of fields. If more fields are added, e.g. for
-    // seconds or a status code, then this value must be increased
-    // to match.
-    private static final int NUMBER_OF_FIELDS = 5;
-                      
+
+    // Constants representing the indices of data values in the dataValues array.
+    private static final int YEAR = 0, MONTH = 1, DAY = 2, HOUR = 3, MINUTE = 4;
+
+    // Array to store the data values extracted from a log line.
+    private int[] dataValues;
+
     /**
-     * Decompose a log line so that the individual fields
-     * are available.
-     * @param logline A single line from the log.
-     *                This should be in the format:
-     *                year month day hour minute etc.
+     * Construct a LogEntry object by parsing a log line string.
+     * 
+     * @param logline The log line string containing date and time information.
      */
-    public LogEntry(String logline)
+    public LogEntry(String logline) 
     {
-        // The array to store the data for a single line.
-        dataValues = new int[NUMBER_OF_FIELDS];
-        // Break up the log line.
+        dataValues = new int[5];
+        // Tokenize the logline and extract the data values.
         LoglineTokenizer tokenizer = new LoglineTokenizer();
-        tokenizer.tokenize(logline,dataValues);
+        tokenizer.tokenize(logline, dataValues);
+        // Set the timestamp based on the extracted data values.
         setWhen();
     }
-    
+
     /**
-     * Create a LogEntry from the individual components.
-     * @param year The year
-     * @param month The month (1-12)
-     * @param day The day (1-31)
-     * @param hour The hour (0-23)
-     * @param minute The minute (0-59)
+     * Construct a LogEntry object with specified date and time values.
+     * 
+     * @param year   The year of the log entry.
+     * @param month  The month of the log entry (1-12).
+     * @param day    The day of the log entry (1-31).
+     * @param hour   The hour of the log entry (0-23).
+     * @param minute The minute of the log entry (0-59).
      */
-    public LogEntry(int year, int month, int day, int hour, int minute)
+    public LogEntry(int year, int month, int day, int hour, int minute) 
     {
-        // The array to store the data for a single line.
-        dataValues = new int[NUMBER_OF_FIELDS];
+        dataValues = new int[5];
+        // Set the data values for year, month, day, hour, and minute.
         dataValues[YEAR] = year;
         dataValues[MONTH] = month;
         dataValues[DAY] = day;
         dataValues[HOUR] = hour;
         dataValues[MINUTE] = minute;
+        // Set the timestamp based on the specified date and time.
         setWhen();
     }
-    
+
     /**
-     * Return the hour.
-     * @return The hour field from the log line.
+     * Get the hour of the log entry.
+     * 
+     * @return The hour of the log entry (0-23).
      */
-    public int getHour()
+    public int getHour() 
     {
         return dataValues[HOUR];
     }
 
     /**
-     * Return the minute.
-     * @return The minute field from the log line.
+     * Get the minute of the log entry.
+     * 
+     * @return The minute of the log entry (0-59).
      */
-    public int getMinute()
+    public int getMinute() 
     {
         return dataValues[MINUTE];
     }
-    
+
     /**
-     * Create a string representation of the data.
-     * This is not necessarily identical with the
-     * text of the original log line.
-     * @return A string representing the data of this entry.
+     * Get a string representation of the LogEntry object.
+     * 
+     * @return A string containing the data values of the log entry.
      */
-    public String toString()
+    public String toString() 
     {
-        StringBuffer buffer = new StringBuffer();
-        for(int value : dataValues) {
-           // Prefix a leading zero on single digit numbers.
-            if(value < 10) {
+        StringBuilder buffer = new StringBuilder();
+        for (int value : dataValues) 
+        {
+            // Prefix a leading zero on single digit numbers.
+            if (value < 10) 
+            {
                 buffer.append('0');
             }
             buffer.append(value);
             buffer.append(' ');
         }
-        // Drop any trailing space.
+        // Remove trailing space and return the string representation.
         return buffer.toString().trim();
     }
-    
+
     /**
-     * Compare the date/time combination of this log entry
-     * with another.
-     * @param otherEntry The other entry to compare against.
-     * @return A negative value if this entry comes before the other.
-     *         A positive value if this entry comes after the other.
-     *         Zero if the entries are the same.
+     * Compare this LogEntry object with another LogEntry object based on their timestamps.
+     * 
+     * @param otherEntry The LogEntry object to compare with.
+     * @return A negative value if this LogEntry comes before the other, a positive value
+     *         if this LogEntry comes after the other, and zero if the LogEntries are the same.
      */
-    public int compareTo(LogEntry otherEntry)
+    public int compareTo(LogEntry otherEntry) 
     {
-        // Use the equivalent Calendars comparison method.
+        // Use the compareTo method of the Calendar class to compare timestamps.
         return when.compareTo(otherEntry.getWhen());
     }
-    
+
     /**
-     * Return the Calendar object representing this event.
-     * @return The Calendar for this event.
+     * Get the month of the log entry.
+     * 
+     * @return The month of the log entry (1-12).
      */
-    private Calendar getWhen()
+    public int getMonth() 
+    {
+        return dataValues[MONTH];
+    }
+
+    /**
+     * Get the day of the log entry.
+     * 
+     * @return The day of the log entry (1-31).
+     */
+    public int getDay() 
+    {
+        return dataValues[DAY];
+    }
+
+    /**
+     * Get the timestamp of the log entry.
+     * 
+     * @return The timestamp as a Calendar object.
+     */
+    private Calendar getWhen() 
     {
         return when;
     }
 
     /**
-     * Create an equivalent Calendar object from the data values.
+     * Set the timestamp of the log entry based on the data values.
      */
-    private void setWhen()
+    private void setWhen() 
     {
+        // Create a Calendar object representing the timestamp.
         when = Calendar.getInstance();
-        // Adjust from 1-based month and day to 0-based.
-        when.set(dataValues[YEAR],
-                 dataValues[MONTH] - 1, dataValues[DAY] - 1,
-                 dataValues[HOUR], dataValues[MINUTE]);
+        // Set the timestamp using the extracted data values.
+        when.set(dataValues[YEAR], dataValues[MONTH] - 1, dataValues[DAY], dataValues[HOUR], dataValues[MINUTE]);
     }
-    
 }

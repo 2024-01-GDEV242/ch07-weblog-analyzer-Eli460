@@ -16,146 +16,130 @@ import java.util.Scanner;
  *    year month day hour minute
  * Log entries are sorted into ascending order of date.
  * 
- * @author David J. Barnes and Michael Kölling.
- * @version    2016.02.29
+ * @author Elisha White
+ * @version 2024.04.29
  */
-public class LogfileReader implements Iterator<LogEntry>
+public class LogfileReader implements Iterator<LogEntry> 
 {
-    // The data format in the log file.
     private String format;
-    // Where the file's contents are stored in the form
-    // of LogEntry objects.
     private ArrayList<LogEntry> entries;
-    // An iterator over entries.
     private Iterator<LogEntry> dataIterator;
-    
+
     /**
-     * Create a LogfileReader to supply data from a default file.
+     * Constructs a LogfileReader object with a default file name "weblog.txt".
      */
-    public LogfileReader()
+    public LogfileReader() 
     {
         this("weblog.txt");
     }
-    
+
     /**
-     * Create a LogfileReader that will supply data
-     * from a particular log file. 
-     * @param filename The file of log data.
+     * Constructs a LogfileReader object with the specified file name.
+     * Reads data from the log file, sorts the entries, and initializes the iterator.
+     * 
+     * @param filename The name of the log file to read.
      */
-    public LogfileReader(String filename)
+    public LogfileReader(String filename) 
     {
-        // The format for the data.
-        format = "Year Month(1-12) Day Hour Minute";       
-        // Where to store the data.
+        format = "Year Month(1-12) Day Hour Minute";
         entries = new ArrayList<>();
         
-        // Attempt to read the complete set of data from file.
         boolean dataRead;
-        try{
-            // Locate the file with respect to the current environment.
+        try {
             URL fileURL = getClass().getClassLoader().getResource(filename);
-            if(fileURL == null) {
+            if (fileURL == null) {
                 throw new FileNotFoundException(filename);
             }
             Scanner logfile = new Scanner(new File(fileURL.toURI()));
-            // Read the data lines until the end of file.
-            while(logfile.hasNextLine()) {
+            while (logfile.hasNextLine()) {
                 String logline = logfile.nextLine();
-                // Break up the line and add it to the list of entries.
                 LogEntry entry = new LogEntry(logline);
                 entries.add(entry);
             }
             logfile.close();
             dataRead = true;
-        }
-        catch(FileNotFoundException | URISyntaxException e) {
+        } catch (FileNotFoundException | URISyntaxException e) {
             System.out.println("Problem encountered: " + e);
             dataRead = false;
         }
-        // If we couldn't read the log file, use simulated data.
-        if(!dataRead) {
+        if (!dataRead) {
             System.out.println("Failed to read the data file: " + filename);
             System.out.println("Using simulated data instead.");
-            createSimulatedData(entries);
+            createSimulatedData(entries, 100);
         }
-        // Sort the entries into ascending order.
         Collections.sort(entries);
         reset();
     }
-    
+
     /**
-     * Does the reader have more data to supply?
-     * @return true if there is more data available,
-     *         false otherwise.
+     * Checks if there are more log entries available.
+     * 
+     * @return true if there are more entries, false otherwise.
      */
-    public boolean hasNext()
+    public boolean hasNext() 
     {
         return dataIterator.hasNext();
     }
-    
+
     /**
-     * Analyze the next line from the log file and
-     * make it available via a LogEntry object.
+     * Retrieves the next log entry.
      * 
-     * @return A LogEntry containing the data from the
-     *         next log line.
+     * @return The next log entry.
      */
-    public LogEntry next()
+    public LogEntry next() 
     {
         return dataIterator.next();
     }
-    
+
     /**
-     * Remove an entry.
-     * This operation is not permitted.
+     * Removes the current log entry. This operation is not permitted.
      */
-    public void remove()
+    public void remove() 
     {
         System.err.println("It is not permitted to remove entries.");
     }
-    
+
     /**
-     * @return A string explaining the format of the data
-     *         in the log file.
+     * Retrieves the format of the log data.
+     * 
+     * @return The format of the log data.
      */
-    public String getFormat()
+    public String getFormat() 
     {
         return format;
     }
-    
+
     /**
-     * Set up a fresh iterator to provide access to the data.
-     * This allows a single file of data to be processed
-     * more than once.
+     * Resets the iterator to the beginning of the log entries.
      */
-    public void reset()
+    public void reset() 
     {
         dataIterator = entries.iterator();
     }
 
     /**
-     * Print the data.
-     */    
-    public void printData()
+     * Prints all log data.
+     */
+    public void printData() 
     {
-        for(LogEntry entry : entries) {
+        for (LogEntry entry : entries) 
+        {
             System.out.println(entry);
         }
     }
 
     /**
-     * Provide a sample of simulated data.
-     * NB: To simplify the creation of this data, no
-     * days after the 28th of a month are ever generated.
-     * @param data Where to store the simulated LogEntry objects.
+     * Creates simulated log data and adds it to the provided list.
+     * 
+     * @param data       The list to which the simulated log data will be added.
+     * @param numEntries The number of simulated entries to generate.
      */
-    private void createSimulatedData(ArrayList<LogEntry> data)
+    private void createSimulatedData(ArrayList<LogEntry> data, int numEntries) 
     {
         LogfileCreator creator = new LogfileCreator();
-        // How many simulated entries we want.
-        int numEntries = 100;
-        for(int i = 0; i < numEntries; i++) {
-            data.add(creator.createEntry());
+        for (int i = 0; i < numEntries; i++) 
+        {
+            data.add(creator.createEntry(2022));
         }
     }
 }
